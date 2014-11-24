@@ -1,0 +1,7 @@
+# Data directory
+path:
+  data:    /elasticsearch
+
+# Disable multicast discovery
+discovery:
+  zen.ping.multicast.enabled: false
