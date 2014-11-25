@@ -29,7 +29,7 @@ RUN wget -qO - http://packages.elasticsearch.org/GPG-KEY-elasticsearch | apt-key
 RUN mkdir /elasticsearch && \
     mv /etc/elasticsearch/elasticsearch.yml /etc/elasticsearch/elasticsearch.yml.orig
 ADD elasticsearch/config /etc/elasticsearch
-ADD logstash/config /etc/logstash/conf.d
+ADD logstash/config /opt/logstash/config
 VOLUME ["/elasticsearch"]
 EXPOSE 9200 9300 5000 5000/udp
 
