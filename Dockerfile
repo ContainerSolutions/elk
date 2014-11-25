@@ -1,4 +1,4 @@
-FROM ubuntu:trusty
+FROM debian:jessie
 
 MAINTAINER Container Solutions <info@container-solutions.com>
 
@@ -6,26 +6,21 @@ ENV DEBIAN_FRONTEND noninteractive
 
 # Locales
 
-RUN echo LANGUAGE=en_US.UTF-8 >> /etc/default/locale
-RUN echo LC_ALL=en_US.UTF-8 >> /etc/default/locale
-RUN echo LANGUAGE=en_US.UTF-8 > /etc/environment
-RUN dpkg-reconfigure locales
+RUN echo LANGUAGE=en_US.UTF-8 >> /etc/default/locale && \
+    echo LC_ALL=en_US.UTF-8 >> /etc/default/locale && \
+    echo LANGUAGE=en_US.UTF-8 > /etc/environment
 
 # Common
 
 RUN apt-get update && \ 
-    apt-get install -y nginx curl software-properties-common
+    apt-get install -y nginx curl software-properties-common unzip wget
 
 # Java
 
-RUN add-apt-repository ppa:webupd8team/java && \ 
-    apt-get update && \ 
-    apt-get -y upgrade
-RUN echo oracle-java8-installer shared/accepted-oracle-license-v1-1 select true | /usr/bin/debconf-set-selections
-RUN apt-get -y install oracle-java8-installer && \ 
-    apt-get clean
+ENV JAVA_VERSION 7u71
+RUN apt-get update && apt-get install -y openjdk-7-jre-headless="$JAVA_VERSION"*
 RUN update-alternatives --display java 
-ENV JAVA_HOME /usr/lib/jvm/java-8-oracle
+ENV JAVA_HOME /usr/lib/jvm/java-7-openjdk-amd64
 
 # Elasticsearch
 
@@ -45,8 +40,8 @@ EXPOSE 9200 9300
 ENV LOGSTASH_VERSION 1.4.2
 RUN curl -Ls https://download.elasticsearch.org/logstash/logstash/logstash-${LOGSTASH_VERSION}.tar.gz | \
     tar xz -C /opt && \
-    ln -s logstash-${LOGSTASH_VERSION} /opt/logstash
-RUN mkdir -p /etc/service/logstash
+    ln -s logstash-${LOGSTASH_VERSION} /opt/logstash && \
+    mkdir -p /etc/service/logstash
 ADD logstash/config/logstash.conf /opt/logstash/config/logstash.conf
 EXPOSE 5000 5000/udp
 
